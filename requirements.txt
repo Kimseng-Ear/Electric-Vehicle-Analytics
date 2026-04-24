@@ -1,0 +1,10 @@
+pandas
+numpy
+fastapi
+uvicorn
+sqlalchemy
+pyodbc
+streamlit
+plotly
+matplotlib
+python-dotenv
