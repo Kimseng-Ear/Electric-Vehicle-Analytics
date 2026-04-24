@@ -63,6 +63,15 @@ def get_mock_data(endpoint):
             "CAFVEligibility": ["Clean Alternative Fuel Vehicle Eligible", "Not eligible due to low battery range", "Eligibility unknown as battery range has not been researched"],
             "TotalVehicles": [105000, 15000, 20000]
         })
+    elif "vehicles" in endpoint:
+        return pd.DataFrame({
+            "VIN": ["5YJ3E1EA1J", "1G1FX6S03H", "WBA0P7C56J", "1N4AZ0CP5D", "5YJSA1E26H", "WA1F2AFY4P", "KNDCD3LD9P", "1V2GNPE87P", "5YJXCBE21L", "5YJ3E1EC7L"],
+            "Make": ["Tesla", "Chevrolet", "BMW", "Nissan", "Tesla", "Audi", "Kia", "Volkswagen", "Tesla", "Tesla"],
+            "Model": ["Model 3", "Bolt EV", "i3", "Leaf", "Model S", "Q4", "EV6", "ID.4", "Model X", "Model 3"],
+            "ModelYear": [2018, 2017, 2018, 2013, 2020, 2022, 2023, 2022, 2021, 2020],
+            "City": ["Seattle", "Bellevue", "Redmond", "Kirkland", "Seattle", "Bellevue", "Redmond", "Tacoma", "Seattle", "Bellevue"],
+            "ElectricRange": [215.0, 238.0, 114.0, 73.0, 390.0, 241.0, 310.0, 250.0, 348.0, 322.0]
+        })
     return pd.DataFrame()
 
 # --- Data Fetching ---
@@ -92,6 +101,7 @@ cities_df = fetch_data("/analytics/cities")
 models_df = fetch_data("/analytics/models")
 range_df = fetch_data("/analytics/range")
 cafv_df = fetch_data("/analytics/cafv")
+vehicles_df = fetch_data("/vehicles?limit=500")
 
 # Apply Filters
 if not trends_df.empty:
@@ -103,7 +113,7 @@ if selected_brand != "All":
     models_df = models_df.head(3) 
 
 # --- UI Layout ---
-tab1, tab2, tab3, tab4 = st.tabs(["Executive Overview", "Market Trends", "Geographic Spread", "Policy Insights"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Executive Overview", "Market Trends", "Geographic Spread", "Policy Insights", "Raw Data Explorer"])
 
 with tab1:
     col1, col2, col3, col4 = st.columns(4)
@@ -191,4 +201,10 @@ with tab4:
         if not cafv_df.empty:
             st.metric("Incentivized Vehicles", f"{cafv_df.iloc[0]['TotalVehicles']:,.0f}")
 
-
+with tab5:
+    st.markdown("### Raw Data Explorer")
+    st.markdown("Interact with the raw dataset below. You can click on column headers to sort, or hover over the top-right of the table to search and filter.")
+    if not vehicles_df.empty:
+        st.dataframe(vehicles_df, use_container_width=True, height=600)
+    else:
+        st.warning("No vehicle data available.")
